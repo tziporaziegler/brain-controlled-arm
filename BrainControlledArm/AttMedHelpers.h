@@ -1,5 +1,5 @@
-#ifndef ATT_MED_HELPERS_H
-#define ATT_MED_HELPERS_H
+#ifndef AttMedHelpers_h
+#define AttMedHelpers_h
 
 #include <Arduino.h>
 

@@ -3,25 +3,20 @@
 
 #include <Brain.h>
 #include <SoftwareSerial.h>
+#include "AttMedHelpers.h"
 
 // Set up the brain parser, pass it the serial object you want to listen on.
 // For Arduino UNO, this should be the hardware serial. For Arduino Micro, this should be the software serial.
 Brain brain(Serial1);
 
-int recentAttentionVal1 = 0;
-int recentAttentionVal2 = 0;
-int recentAttentionVal3 = 0;
-
-int recentMeditationVal1 = 0;
-int recentMeditationVal2 = 0;
-int recentMeditationVal3 = 0;
+AttMedHelpers attMedHelpers;
 
 // These numbers should be calibrated to each individual.
-double attentionThreshold = 50;
-double meditationThreshold = 50;
+const double attentionThreshold = 50;
+const double meditationThreshold = 50;
 
 // For now, use an LED to represent the arm movement.
-int ledPin = 4;
+const int ledPin = 4;
 
 void setup() {
   // Start the hardware serial.
@@ -54,12 +49,17 @@ void loop() {
         return;
       }
 
-      updateRecentAttentionVals(attentionVal);
-      updateRecentMeditationVals(meditationVal);
+      attMedHelpers.updateRecentAttentionVals(attentionVal);
+      attMedHelpers.updateRecentMeditationVals(meditationVal);
 
       // Use the average of 3 packets instead of a single packet to increase reliablity.
-      double attentionAvg = calculateRecentAttentionAvg();
-      double meditationAvg = calculateRecentMeditationAvg();
+      double attentionAvg = attMedHelpers.calculateRecentAttentionAvg();
+      Serial.print("Attention Average: ");
+      Serial.println(attentionAvg);
+
+      double meditationAvg = attMedHelpers.calculateRecentMeditationAvg();
+      Serial.print("Meditation Average: ");
+      Serial.println(meditationAvg);
 
       // Move the arm based on the meditation.
       if (meditationAvg > meditationThreshold) {
@@ -69,32 +69,6 @@ void loop() {
       }
     }
   }
-}
-
-void updateRecentAttentionVals(int newVal) {
-  recentAttentionVal3 = recentAttentionVal2;
-  recentAttentionVal2 = recentAttentionVal1;
-  recentAttentionVal1 = newVal;
-}
-
-void updateRecentMeditationVals(int newVal) {
-  recentMeditationVal3 = recentMeditationVal2;
-  recentMeditationVal2 = recentMeditationVal1;
-  recentMeditationVal1 = newVal;
-}
-
-double calculateRecentAttentionAvg() {
-  double average = (recentAttentionVal1 + recentAttentionVal2 + recentAttentionVal3) / 3.0;
-  Serial.print("Attention Average: ");
-  Serial.println(average);
-  return average;
-}
-
-double calculateRecentMeditationAvg() {
-  double average = (recentMeditationVal1 + recentMeditationVal2 + recentMeditationVal3) / 3.0;
-  Serial.print("Meditation Average: ");
-  Serial.println(average);
-  return average;
 }
 
 void moveArmUp() {

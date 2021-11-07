@@ -13,8 +13,8 @@
 // For Arduino UNO, this should be the hardware serial. For Arduino Micro, this should be the software serial.
 Brain brain(Serial1);
 
-const int WAVE_THRESHOLD = 10;
-BrainWaves brainWaves(WAVE_THRESHOLD);
+const int WAVE_LOW_THRESHOLD = 10;
+BrainWaves brainWaves(WAVE_LOW_THRESHOLD);
 
 //// These numbers should be calibrated to each individual.
 const int ATTENTION_THRESHOLD = 50;

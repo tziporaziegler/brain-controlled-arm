@@ -2,12 +2,14 @@
 #include "Arm.h"
 
 Arm::Arm() {
-  pinMode(LED_PIN, OUTPUT);
+  pinMode(GREEN_LED_PIN, OUTPUT);
+  pinMode(RED_LED_PIN, OUTPUT);
 }
 
 void Arm::moveUp() {
   if (currentHeight < MAX_HEIGHT) {
-    digitalWrite(LED_PIN, HIGH);
+    digitalWrite(GREEN_LED_PIN, HIGH);
+    digitalWrite(RED_LED_PIN, LOW);
     currentHeight++;
 
     Serial.print("Arm moving up! New height: ");
@@ -21,9 +23,10 @@ void Arm::moveUp() {
 
 void Arm::moveDown() {
   if (currentHeight > MIN_HEIGHT) {
-    digitalWrite(LED_PIN, LOW);
+    digitalWrite(RED_LED_PIN, HIGH);
+    digitalWrite(GREEN_LED_PIN, LOW);
     currentHeight--;
-    
+
     Serial.print("Arm moving down. New height: ");
     Serial.println(currentHeight);
   }

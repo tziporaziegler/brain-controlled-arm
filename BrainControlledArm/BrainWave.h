@@ -1,8 +1,6 @@
 #ifndef BrainWave_h
 #define BrainWave_h
 
-#include <Arduino.h>
-
 class BrainWave {
   private:
     const char* label;
@@ -15,9 +13,9 @@ class BrainWave {
     void update(unsigned long newVal);
 
     const char* getLabel();
-    unsigned long getMaxVal();
     
     double getPercent();  
+    void printPercentStr();
 };
 
 #endif

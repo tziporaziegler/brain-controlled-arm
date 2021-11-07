@@ -1,8 +1,6 @@
 #ifndef AttMedHelpers_h
 #define AttMedHelpers_h
 
-#include <Arduino.h>
-
 class AttMedHelpers {
   private:
     int recentAttentionVal1 = 0;

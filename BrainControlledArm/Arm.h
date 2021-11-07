@@ -1,8 +1,6 @@
 #ifndef Arm_h
 #define Arm_h
 
-#include <Arduino.h>
-
 class Arm {
   private:
     const int minHeight = 0;

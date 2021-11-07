@@ -6,27 +6,22 @@
 #include <Brain.h>
 #include <SoftwareSerial.h>
 #include "AttMedHelpers.h"
-#include "BrainWave.h"
+#include "BrainWaves.h"
 #include "Arm.h"
 
 // Set up the brain parser, pass it the serial object you want to listen on.
 // For Arduino UNO, this should be the hardware serial. For Arduino Micro, this should be the software serial.
 Brain brain(Serial1);
 
-Arm arm;
-AttMedHelpers attMedHelpers;
-
+BrainWaves brainWaves;
 const double waveThreshold = 25;
 
-double recentWavePercent1 = 100.0;
-double recentWavePercent2 = 100.0;
-double recentWavePercent3 = 100.0;
-
+AttMedHelpers attMedHelpers;
 // These numbers should be calibrated to each individual.
 const double attentionThreshold = 50;
 const double meditationThreshold = 50;
 
-BrainWave waves[] = {("delta"), ("theta"), ("low alpha"), ("high alpha"), ("low beta"), ("high beta"), ("low gamma"), ("high gamma")};
+Arm arm;
 
 void setup() {
   // Start the hardware serial.
@@ -50,34 +45,8 @@ void loop() {
         return;
       }
 
-      int totalWavePercent = 0;
-
-      unsigned long* powerArray = brain.readPowerArray();
-      const int numWaves = sizeof(powerArray);
-      for (int i = 0; i < numWaves; i++) {
-        BrainWave wave = waves[i];
-        const char* label = wave.getLabel();
-
-        const unsigned long newVal = powerArray[i];
-
-        if (newVal == 0) {
-          Serial.print("Bad data for the following wave: ");
-          Serial.println(label);
-          return;
-        }
-
-        wave.update(newVal);
-
-        const double wavePercent = wave.getPercent();
-        printPercentStr(label, newVal, wave.getMaxVal(), wavePercent);
-        totalWavePercent += wavePercent;
-      }
-
-      double avgPercent = totalWavePercent / double(numWaves);
-      Serial.print("Percent Average: ");
-      Serial.println(avgPercent);
-      updateRecentMeditationVals(avgPercent);
-      const double recentWavePercentAvg = calculateRecentWavePercentAvg();
+      brainWaves.update(brain.readPowerArray());
+      const double recentWavePercentAvg = brainWaves.calculateRecentPercentAvg();
 
       if (recentWavePercentAvg < waveThreshold) {
         arm.moveUp();
@@ -90,6 +59,8 @@ void loop() {
         Serial.println("Enjoy your drink!");
         delay(5000);
       }
+
+      
 
       int attentionVal = brain.readAttention();
       int meditationVal = brain.readMeditation();
@@ -118,25 +89,4 @@ void loop() {
       //      }
     }
   }
-}
-
-void printPercentStr(const char* label, unsigned long newVal, unsigned long maxVal, double percent) {
-  Serial.print(label);
-  Serial.print(": ");
-  Serial.print(newVal);
-  Serial.print("/");
-  Serial.print(maxVal);
-  Serial.print(" = ");
-  Serial.print(percent);
-  Serial.println("%");
-}
-
-void updateRecentMeditationVals(double newVal) {
-  recentWavePercent3 = recentWavePercent2;
-  recentWavePercent2 = recentWavePercent1;
-  recentWavePercent1 = newVal;
-}
-
-double calculateRecentWavePercentAvg() {
-  return (recentWavePercent1 + recentWavePercent2 + recentWavePercent3) / 3;
 }

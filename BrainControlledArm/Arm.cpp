@@ -7,10 +7,10 @@ Arm::Arm() {
 
 void Arm::moveUp() {
   if (currentHeight < MAX_HEIGHT) {
-    Serial.println("Arm moving up!");
     digitalWrite(LED_PIN, HIGH);
     currentHeight++;
-    Serial.print("New height: ");
+
+    Serial.print("Arm moving up! New height: ");
     Serial.println(currentHeight);
 
     if (currentHeight == MAX_HEIGHT) {
@@ -21,10 +21,10 @@ void Arm::moveUp() {
 
 void Arm::moveDown() {
   if (currentHeight > MIN_HEIGHT) {
-    Serial.println("Arm moving down.");
     digitalWrite(LED_PIN, LOW);
     currentHeight--;
-    Serial.print("New height: ");
+    
+    Serial.print("Arm moving down. New height: ");
     Serial.println(currentHeight);
   }
 }

@@ -10,9 +10,9 @@ void BrainWaves::update(unsigned long* powerArray) {
   double totalWavePercent = 0;
   int numElementsBelowThreshold = 0;
 
-  const int numWaves = 8; //sizeof(powerArray) / sizeof(unsigned long);
-  Serial.print("Num waves: ");
-  Serial.println(numWaves);
+  const int numWaves = 8; // sizeof(powerArray) / sizeof(*powerArray);
+  //  Serial.print("Num waves: ");
+  //  Serial.println(numWaves);
 
   for (int i = 0; i < numWaves; i++) {
     BrainWave& wave = waves[i];

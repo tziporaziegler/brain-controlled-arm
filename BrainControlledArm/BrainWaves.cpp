@@ -2,12 +2,15 @@
 #include "BrainWave.h"
 #include <Arduino.h>
 
-BrainWaves::BrainWaves() {}
+BrainWaves::BrainWaves(const int percentThreshold) {
+  this->percentThreshold = percentThreshold;
+}
 
 void BrainWaves::update(unsigned long* powerArray) {
   double totalWavePercent = 0;
+  int numElementsBelowThreshold = 0;
 
-  const int numWaves = sizeof(powerArray);
+  const int numWaves = 8; //sizeof(powerArray) / sizeof(unsigned long);
   Serial.print("Num waves: ");
   Serial.println(numWaves);
 
@@ -22,22 +25,45 @@ void BrainWaves::update(unsigned long* powerArray) {
     }
 
     wave.update(newVal);
+    double percent = wave.getPercent();
     wave.printPercentStr();
-    totalWavePercent += wave.getPercent();
+    totalWavePercent += percent;
+
+    if (percent < percentThreshold) {
+      numElementsBelowThreshold++;
+    }
   }
 
-  double avgPercent = totalWavePercent / numWaves;
-  Serial.print("Wave Percent Average: ");
-  Serial.println(avgPercent);
-  updateRecentPercentVals(avgPercent);
+  if (numWaves > 0) {
+    double avgPercent = totalWavePercent / (double)numWaves;
+    Serial.print("Wave Percent Average: ");
+    Serial.println(avgPercent);
+    updateRecentPercentVals(avgPercent);
+
+    updateRecentNumWavesBelowThreshold(numElementsBelowThreshold);
+  }
 }
 
-double BrainWaves::calculateRecentPercentAvg() {
-  return (recentPercent1 + recentPercent2 + recentPercent3) / 3.0;
+double BrainWaves::getNumElementsBelowThresholdAvg() {
+  return (recentNumElementsBelowThreshold1 + recentNumElementsBelowThreshold2 + recentNumElementsBelowThreshold3) / 3.0;
+}
+
+bool BrainWaves::percentAvgAboveThreshold() {
+  return getRecentPercentAvg() < percentThreshold;
+}
+
+void BrainWaves::updateRecentNumWavesBelowThreshold(int newVal) {
+  recentNumElementsBelowThreshold3 = recentNumElementsBelowThreshold2;
+  recentNumElementsBelowThreshold2 = recentNumElementsBelowThreshold1;
+  recentNumElementsBelowThreshold1 = newVal;
 }
 
 void BrainWaves::updateRecentPercentVals(double newVal) {
   recentPercent3 = recentPercent2;
   recentPercent2 = recentPercent1;
   recentPercent1 = newVal;
+}
+
+double BrainWaves::getRecentPercentAvg() {
+  return (recentPercent1 + recentPercent2 + recentPercent3) / 3.0;
 }

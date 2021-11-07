@@ -5,7 +5,7 @@
 
 #include <Brain.h>
 #include <SoftwareSerial.h>
-#include "AttMedHelpers.h"
+//#include "AttMedHelpers.h"
 #include "BrainWaves.h"
 #include "Arm.h"
 
@@ -13,13 +13,13 @@
 // For Arduino UNO, this should be the hardware serial. For Arduino Micro, this should be the software serial.
 Brain brain(Serial1);
 
-BrainWaves brainWaves;
-const double waveThreshold = 25;
+const int WAVE_THRESHOLD = 25;
+BrainWaves brainWaves(WAVE_THRESHOLD);
 
-AttMedHelpers attMedHelpers;
-// These numbers should be calibrated to each individual.
-const double attentionThreshold = 50;
-const double meditationThreshold = 50;
+//// These numbers should be calibrated to each individual.
+//const int ATTENTION_THRESHOLD = 50;
+//const int MEDITATION_THRESHOLD = 50;
+//AttMedHelpers attMedHelpers;
 
 Arm arm;
 
@@ -46,43 +46,43 @@ void loop() {
       }
 
       brainWaves.update(brain.readPowerArray());
-      const double recentWavePercentAvg = brainWaves.calculateRecentPercentAvg();
-
-      if (recentWavePercentAvg < waveThreshold) {
+      int numElementsBelowThresholdAvg = brainWaves.getNumElementsBelowThresholdAvg();
+      Serial.print("Num elements below threshold average: ");
+      Serial.println(numElementsBelowThresholdAvg);
+      if (numElementsBelowThresholdAvg > 5) {
         arm.moveUp();
       } else {
         arm.moveDown();
       }
 
       // Ensure the user has time to take a drink.
-      if (arm.atMaxHeight()) {
+      if (arm.isStopped()) {
         Serial.println("Enjoy your drink!");
         delay(5000);
+        arm.start();
       }
-
-      
-
-      int attentionVal = brain.readAttention();
-      int meditationVal = brain.readMeditation();
-      if (attentionVal == 0 || meditationVal == 0) {
-        Serial.println("Bad attention or meditation data.");
-        return;
-      }
-
-      attMedHelpers.updateRecentAttentionVals(attentionVal);
-      attMedHelpers.updateRecentMeditationVals(meditationVal);
-
-      // Use the average of 3 packets instead of a single packet to increase reliablity.
-      double attentionAvg = attMedHelpers.calculateRecentAttentionAvg();
-      Serial.print("Attention Average: ");
-      Serial.println(attentionAvg);
-
-      double meditationAvg = attMedHelpers.calculateRecentMeditationAvg();
-      Serial.print("Meditation Average: ");
-      Serial.println(meditationAvg);
-
-      // Move the arm based on the meditation.
-      //      if (meditationAvg > meditationThreshold) {
+      //
+      //      int attentionVal = brain.readAttention();
+      //      int meditationVal = brain.readMeditation();
+      //      if (attentionVal == 0 || meditationVal == 0) {
+      //        Serial.println("Bad attention or meditation data.");
+      //        return;
+      //      }
+      //
+      //      attMedHelpers.updateRecentAttentionVals(attentionVal);
+      //      attMedHelpers.updateRecentMeditationVals(meditationVal);
+      //
+      //      // Use the average of 3 packets instead of a single packet to increase reliablity.
+      //      double attentionAvg = attMedHelpers.calculateRecentAttentionAvg();
+      //      Serial.print("Attention Average: ");
+      //      Serial.println(attentionAvg);
+      //
+      //      double meditationAvg = attMedHelpers.calculateRecentMeditationAvg();
+      //      Serial.print("Meditation Average: ");
+      //      Serial.println(meditationAvg);
+      //
+      //      // Move the arm based on the meditation.
+      //      if (meditationAvg > MEDITATION_THRESHOLD) {
       //        arm.moveUp();
       //      } else {
       //        arm.moveDown();

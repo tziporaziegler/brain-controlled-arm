@@ -7,13 +7,7 @@ BrainWave::BrainWave(const char* label) {
 
 void BrainWave::update(unsigned long newVal) {
   latestVal = newVal;
-  Serial.print("Old max: ");
-  Serial.println(maxVal);
-  Serial.print("New val: ");
-  Serial.println(newVal);
   maxVal = max(maxVal, newVal);
-  Serial.print("New max: ");
-  Serial.println(maxVal);
 }
 
 const char* BrainWave::getLabel() {

@@ -3,19 +3,23 @@
 
 class Arm {
   private:
-    const int minHeight = 0;
-    const int maxHeight = 10;
+    const int MIN_HEIGHT = 0;
+    const int MAX_HEIGHT = 10;
     int currentHeight = 0;
+    bool stopped = false;
 
     // For now, use an LED to represent the arm movement.
-    const int ledPin = 4;
+    const int LED_PIN = 4;
 
   public:
     Arm();
 
     void moveUp();
     void moveDown();
-    bool atMaxHeight();
+
+    void start();
+    void stop();
+    bool isStopped();
 };
 
 #endif

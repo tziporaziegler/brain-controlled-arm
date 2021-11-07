@@ -2,29 +2,41 @@
 #include "Arm.h"
 
 Arm::Arm() {
-  pinMode(ledPin, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void Arm::moveUp() {
-  if (currentHeight < maxHeight) {
+  if (currentHeight < MAX_HEIGHT) {
     Serial.println("Arm moving up!");
-    digitalWrite(ledPin, HIGH);
+    digitalWrite(LED_PIN, HIGH);
     currentHeight++;
     Serial.print("New height: ");
     Serial.println(currentHeight);
+
+    if (currentHeight == MAX_HEIGHT) {
+      stop();
+    }
   }
 }
 
 void Arm::moveDown() {
-  if (currentHeight > minHeight) {
+  if (currentHeight > MIN_HEIGHT) {
     Serial.println("Arm moving down.");
-    digitalWrite(ledPin, LOW);
+    digitalWrite(LED_PIN, LOW);
     currentHeight--;
     Serial.print("New height: ");
     Serial.println(currentHeight);
   }
 }
 
-bool Arm::atMaxHeight() {
-  return currentHeight == maxHeight;
+void Arm::start() {
+  stopped = false;
+}
+
+void Arm::stop() {
+  stopped = true;
+}
+
+bool Arm::isStopped() {
+  return stopped;
 }

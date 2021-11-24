@@ -2,7 +2,7 @@
 #include "BrainWave.h"
 #include <Arduino.h>
 
-BrainWaves::BrainWaves(const int percentThreshold) {
+BrainWaves::BrainWaves(const double percentThreshold) {
   this->percentThreshold = percentThreshold;
 }
 
@@ -38,6 +38,7 @@ void BrainWaves::update(unsigned long* powerArray) {
     double avgPercent = totalWavePercent / (double)numWaves;
     Serial.print("Wave Percent Average: ");
     Serial.println(avgPercent);
+    
     updateRecentPercentVals(avgPercent);
 
     updateRecentNumWavesBelowThreshold(numElementsBelowThreshold);
@@ -66,4 +67,12 @@ void BrainWaves::updateRecentPercentVals(double newVal) {
 
 double BrainWaves::getRecentPercentAvg() {
   return (recentPercent1 + recentPercent2 + recentPercent3) / 3.0;
+}
+
+bool BrainWaves::recentPercent1BelowThreshold() {
+  return recentPercent1 < percentThreshold; 
+}
+
+bool BrainWaves::recentPercent2BelowThreshold() {
+  return recentPercent2 < percentThreshold;
 }

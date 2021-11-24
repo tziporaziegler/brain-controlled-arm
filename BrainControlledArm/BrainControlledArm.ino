@@ -13,12 +13,13 @@
 // For Arduino UNO, this should be the hardware serial. For Arduino Micro, this should be the software serial.
 Brain brain(Serial1);
 
-const int WAVE_LOW_THRESHOLD = 10;
+const double WAVE_LOW_THRESHOLD = 5.0;
+const int NUM_BELOW_THRESHOLD_CUTOFF = 5;
 BrainWaves brainWaves(WAVE_LOW_THRESHOLD);
 
 //// These numbers should be calibrated to each individual.
-const int ATTENTION_THRESHOLD = 50;
-const int MEDITATION_THRESHOLD = 50;
+//const int ATTENTION_THRESHOLD = 50;
+//const int MEDITATION_THRESHOLD = 50;
 AttMedHelpers attMedHelpers;
 
 Arm arm;
@@ -46,13 +47,18 @@ void loop() {
       }
 
       brainWaves.update(brain.readPowerArray());
+
       int numElementsBelowThresholdAvg = brainWaves.getNumElementsBelowThresholdAvg();
-      Serial.print("Num elements below threshold average: ");
-      Serial.println(numElementsBelowThresholdAvg);
-      if (numElementsBelowThresholdAvg > 5) {
+      Serial.print("Num elements below threshold: ");
+      Serial.println(brainWaves.recentNumElementsBelowThreshold1);
+      if (brainWaves.recentNumElementsBelowThreshold1 > NUM_BELOW_THRESHOLD_CUTOFF && brainWaves.recentNumElementsBelowThreshold2 > NUM_BELOW_THRESHOLD_CUTOFF) {
+        //      if (brainWaves.recentPercent1BelowThreshold() && brainWaves.recentPercent2BelowThreshold()) {
         arm.moveUp();
-      } else {
+      } else if (brainWaves.recentNumElementsBelowThreshold1 < NUM_BELOW_THRESHOLD_CUTOFF && brainWaves.recentNumElementsBelowThreshold2 < NUM_BELOW_THRESHOLD_CUTOFF) {
         arm.moveDown();
+      } else {
+        // nothing happens if numElementsBelowThreshold equals cutoff or if two consecutive packets switch between attention and meditation states.
+        arm.stay();
       }
 
       // Ensure the user has time to take a drink.
@@ -87,6 +93,8 @@ void loop() {
       //      } else {
       //        arm.moveDown();
       //      }
+
+      Serial.println("");
     }
   }
 

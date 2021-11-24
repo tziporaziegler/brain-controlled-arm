@@ -8,16 +8,12 @@ class Arm {
     int currentHeight = 0;
     bool stopped = false;
 
-    // For now, use LEDs to represent the arm movement.
-    // Green = up. Red = down.
-    const int GREEN_LED_PIN = 9;
-    const int RED_LED_PIN = 5;
-
   public:
     Arm();
 
     void moveUp();
     void moveDown();
+    void stay();
 
     void start();
     void stop();

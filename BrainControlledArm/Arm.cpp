@@ -1,15 +1,11 @@
 #include "Arduino.h"
 #include "Arm.h"
 
-Arm::Arm() {
-  pinMode(GREEN_LED_PIN, OUTPUT);
-  pinMode(RED_LED_PIN, OUTPUT);
-}
+Arm::Arm() {}
 
 void Arm::moveUp() {
   if (currentHeight < MAX_HEIGHT) {
-    digitalWrite(GREEN_LED_PIN, HIGH);
-    digitalWrite(RED_LED_PIN, LOW);
+      // TODO: Send 1 to servo
     currentHeight++;
 
     Serial.print("Arm moving up! New height: ");
@@ -18,18 +14,26 @@ void Arm::moveUp() {
     if (currentHeight == MAX_HEIGHT) {
       stop();
     }
+  } else {
+    Serial.println("Arm at max");
   }
 }
 
 void Arm::moveDown() {
   if (currentHeight > MIN_HEIGHT) {
-    digitalWrite(RED_LED_PIN, HIGH);
-    digitalWrite(GREEN_LED_PIN, LOW);
+      // TODO: Send -1 to servo
     currentHeight--;
 
     Serial.print("Arm moving down. New height: ");
     Serial.println(currentHeight);
+  } else {
+    Serial.println("Arm at min");
   }
+}
+
+void Arm::stay() {
+  // TODO: Send 0 or nothing to servo
+  Serial.println("Arm not moving");
 }
 
 void Arm::start() {

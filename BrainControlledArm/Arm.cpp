@@ -1,17 +1,22 @@
 #include "Arduino.h"
 #include "Arm.h"
+#include <RF24.h>
 
-Arm::Arm() {}
+Arm::Arm(RF24 radio) {
+  this->radio = radio;
+}
 
 void Arm::moveUp() {
-  if (currentHeight < MAX_HEIGHT) {
-      // TODO: Send 1 to servo
-    currentHeight++;
+  if (currentServoAngle < MAX_SERVO_ANGLE) {
+    // To allow for gradual stepped movement, change this to currentServoAngle += interval.
+    currentServoAngle = MAX_SERVO_ANGLE;
+    
+    move();
 
     Serial.print("Arm moving up! New height: ");
-    Serial.println(currentHeight);
+    Serial.println(currentServoAngle);
 
-    if (currentHeight == MAX_HEIGHT) {
+    if (currentServoAngle == MAX_SERVO_ANGLE) {
       stop();
     }
   } else {
@@ -20,15 +25,21 @@ void Arm::moveUp() {
 }
 
 void Arm::moveDown() {
-  if (currentHeight > MIN_HEIGHT) {
-      // TODO: Send -1 to servo
-    currentHeight--;
+  if (currentServoAngle > MIN_SERVO_ANGLE) {
+    // To allow for gradual stepped movement, change this to currentServoAngle -= interval.
+    currentServoAngle = MIN_SERVO_ANGLE;
+    
+    move();
 
     Serial.print("Arm moving down. New height: ");
-    Serial.println(currentHeight);
+    Serial.println(currentServoAngle);
   } else {
     Serial.println("Arm at min");
   }
+}
+
+void Arm::move() {
+  radio.write(&currentServoAngle, sizeof(currentServoAngle));
 }
 
 void Arm::stay() {

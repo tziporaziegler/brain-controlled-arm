@@ -1,15 +1,20 @@
 #ifndef Arm_h
 #define Arm_h
 
+#include <RF24.h>
+
 class Arm {
   private:
-    const int MIN_HEIGHT = 0;
-    const int MAX_HEIGHT = 10;
-    int currentHeight = 0;
+    const int MIN_SERVO_ANGLE = 30;
+    const int MAX_SERVO_ANGLE = 160;
+    int currentServoAngle = 30;
     bool stopped = false;
+    RF24 radio;
+
+    void move();
 
   public:
-    Arm();
+    Arm(RF24 radio);
 
     void moveUp();
     void moveDown();

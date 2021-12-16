@@ -9,11 +9,18 @@
 #include "BrainWaves.h"
 #include "Arm.h"
 
+// Radio module imports
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+SoftwareSerial Serial1(10, 11); // RX, TX
+
 // Set up the brain parser, pass it the serial object you want to listen on.
 // For Arduino UNO, this should be the hardware serial. For Arduino Micro, this should be the software serial.
 Brain brain(Serial1);
 
-const double WAVE_LOW_THRESHOLD = 5.0;
+const double WAVE_LOW_THRESHOLD = 7.0;
 const int NUM_BELOW_THRESHOLD_CUTOFF = 5;
 BrainWaves brainWaves(WAVE_LOW_THRESHOLD);
 
@@ -22,14 +29,22 @@ BrainWaves brainWaves(WAVE_LOW_THRESHOLD);
 //const int MEDITATION_THRESHOLD = 50;
 AttMedHelpers attMedHelpers;
 
-Arm arm;
+RF24 radio(5, 4); // CE, CSN
+const byte address[6] = "00001";
 
+Arm arm(radio);
+ 
 void setup() {
   // Start the hardware serial.
   Serial.begin(9600);
 
   // Start the software serial. This is needed for Arduino Micro if using the RX pin.
   Serial1.begin(9600);
+
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
 }
 
 void loop() {

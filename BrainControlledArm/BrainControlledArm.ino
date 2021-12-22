@@ -1,18 +1,20 @@
 /**
-   Description: Grabs brain data from the serial RX pin and sends CSV out over the TX pin (Half duplex.)
-   Moves an arm based on the attention and meditation values.
-*/
+ * Description: Grabs brain data from the serial RX pin and sends CSV out over the TX pin (Half duplex.)             
+ *              Moves an arm based on the attention and meditation values.
+ * Author:      Tzipora Ziegler
+ */
 
-#include <Brain.h>
 #include <SoftwareSerial.h>
-#include "AttMedHelpers.h"
-#include "BrainWaves.h"
-#include "Arm.h"
+#include <Brain.h> // https://github.com/kitschpatrol/Brain
 
 // Radio module imports
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+
+#include "AttMedHelpers.h"
+#include "BrainWaves.h"
+#include "Arm.h"
 
 SoftwareSerial Serial1(10, 11); // RX, TX
 
